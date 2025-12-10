@@ -1,0 +1,37 @@
+PREPROCESSING INFORMATION - DAY 2
+=====================================
+
+Dataset:
+- Total samples: 30
+- Training samples: 24
+- Testing samples: 6
+
+Vocabulary:
+- Vocabulary size: 286
+- Max words in tokenizer: 5000
+- OOV token: <OOV>
+
+Sequences:
+- Max sequence length: 100
+- Padding: post
+- Truncating: post
+
+Labels:
+- Number of classes: 14
+- Classes: Backend Developer, Business Analyst, Cloud Architect, Data Analyst, Data Engineer, Data Scientist, DevOps Engineer, Frontend Developer, Java Developer, Mobile Developer, Python Developer, QA Engineer, Security Analyst, Web Developer
+
+Text Cleaning:
+- Lowercasing: Yes
+- Special characters removed: Yes
+- Stopwords removed: No
+- Extra spaces removed: Yes
+
+Files Saved:
+- models/tokenizer.pkl
+- models/label_encoder.pkl
+- models/X_train.npy
+- models/X_test.npy
+- models/y_train.npy
+- models/y_test.npy
+
+Ready for Day 3: Model Building!
