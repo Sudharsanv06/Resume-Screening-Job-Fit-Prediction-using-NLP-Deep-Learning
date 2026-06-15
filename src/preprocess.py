@@ -5,6 +5,7 @@ Day 2: Text cleaning and preprocessing utilities
 
 import re
 import string
+import html
 
 
 def clean_text(text, remove_stopwords=False):
@@ -18,13 +19,22 @@ def clean_text(text, remove_stopwords=False):
     Returns:
         str: Cleaned text
     """
-    # Convert to lowercase
-    text = text.lower()
+    if not isinstance(text, str):
+        return ""
+        
+    # Unescape HTML entities (e.g. &amp; -> &, &lt; -> <)
+    text = html.unescape(text)
     
-    # Remove special characters and digits (keep only letters and spaces)
-    text = re.sub(r'[^a-z\s]', '', text)
+    # Remove HTML tags (e.g. <p>...</p>)
+    text = re.sub(r'<[^>]*>', ' ', text)
     
-    # Remove extra whitespace
+    # Remove remaining/raw HTML entity sequences if they exist
+    text = text.replace("&amp;", "").replace("&lt;", "").replace("&gt;", "")
+    
+    # Replace newlines/tabs with space
+    text = re.sub(r'[\r\n\t]+', ' ', text)
+    
+    # Remove extra spaces
     text = re.sub(r'\s+', ' ', text)
     
     # Strip leading/trailing spaces
@@ -37,7 +47,7 @@ def clean_text(text, remove_stopwords=False):
                      'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'should',
                      'can', 'could', 'may', 'might', 'must', 'that', 'this', 'these', 'those'}
         words = text.split()
-        text = ' '.join([word for word in words if word not in stopwords])
+        text = ' '.join([word for word in words if word.lower() not in stopwords])
     
     return text
 
