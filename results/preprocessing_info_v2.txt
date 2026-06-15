@@ -1,0 +1,26 @@
+DATA AUDIT & PREPROCESSING INFORMATION - V2
+===========================================
+Total Samples: 560
+Number of Categories: 14
+Mean Word Count: 103.49
+Min Word Count: 92
+Max Word Count: 118
+
+Category Distribution:
+----------------------
+Backend Developer        : 40   | OK
+Business Analyst         : 40   | OK
+Cloud Architect          : 40   | OK
+Data Analyst             : 40   | OK
+Data Engineer            : 40   | OK
+Data Scientist           : 40   | OK
+DevOps Engineer          : 40   | OK
+Frontend Developer       : 40   | OK
+Java Developer           : 40   | OK
+Mobile Developer         : 40   | OK
+Python Developer         : 40   | OK
+QA Engineer              : 40   | OK
+Security Analyst         : 40   | OK
+Web Developer            : 40   | OK
+
+Dataset verification passed: All categories are balanced.

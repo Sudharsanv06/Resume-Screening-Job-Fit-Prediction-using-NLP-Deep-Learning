@@ -1,0 +1,38 @@
+MODEL RETRAINING & PERFORMANCE METRICS - V3
+===========================================
+Base Model: SentenceTransformer (all-MiniLM-L6-v2)
+Classifier: GridSearchCV tuned LogisticRegression(max_iter=1000, random_state=42)
+Best Hyperparameter (C): 10.0
+
+Dataset Split Info:
+  - Total clean samples: 918
+  - Training samples: 642
+  - Validation samples: 138
+  - Testing samples: 138
+
+Performance Summary:
+  - Validation Accuracy: 97.10%
+  - Test Accuracy:       95.65%
+
+Test Classification Report:
+---------------------------
+                    precision    recall  f1-score   support
+
+ Backend Developer       0.83      0.95      0.89        21
+  Business Analyst       0.98      1.00      0.99        45
+   Cloud Architect       1.00      1.00      1.00         6
+      Data Analyst       1.00      1.00      1.00         6
+     Data Engineer       1.00      0.83      0.91         6
+    Data Scientist       1.00      1.00      1.00         6
+   DevOps Engineer       1.00      0.83      0.91         6
+Frontend Developer       1.00      1.00      1.00         6
+    Java Developer       1.00      1.00      1.00         6
+  Mobile Developer       1.00      1.00      1.00         6
+  Python Developer       1.00      0.83      0.91         6
+       QA Engineer       0.86      1.00      0.92         6
+  Security Analyst       1.00      0.83      0.91         6
+     Web Developer       1.00      0.83      0.91         6
+
+          accuracy                           0.96       138
+         macro avg       0.98      0.94      0.95       138
+      weighted avg       0.96      0.96      0.96       138
