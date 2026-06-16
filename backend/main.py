@@ -48,9 +48,7 @@ limiter = Limiter(key_func=get_remote_address)
 # ── Lifespan ──────────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("startup", extra={"event": "loading_models"})
-    _load_assets()
-    logger.info("startup", extra={"event": "models_ready"})
+    logger.info("startup", extra={"event": "server_ready", "mode": "lazy_load"})
     yield
     logger.info("shutdown", extra={"event": "server_stopped"})
 
