@@ -36,7 +36,7 @@ def _load_assets():
                 f"Model directory not found at {ENCODER_PATH}. Please run train_model.py first."
             )
         print("Loading sentence transformer encoder...")
-        _encoder = SentenceTransformer(ENCODER_PATH)
+        _encoder = SentenceTransformer('all-MiniLM-L6-v2', cache_folder=ENCODER_PATH)
 
     if _classifier is None:
         if not os.path.exists(CLASSIFIER_PATH):
