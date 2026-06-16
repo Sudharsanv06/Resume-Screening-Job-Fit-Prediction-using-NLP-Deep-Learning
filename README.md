@@ -1,9 +1,15 @@
-# Resume Screening & Job Fit Prediction
+---
+title: Resume Screener API
+emoji: 📄
+colorFrom: purple
+colorTo: blue
+sdk: docker
+app_port: 8000
+pinned: false
+---
 
 [![CI](https://github.com/Sudharsanv06/Resume-Screening-Job-Fit-Prediction-using-NLP-Deep-Learning/actions/workflows/ci.yml/badge.svg)](https://github.com/Sudharsanv06/Resume-Screening-Job-Fit-Prediction-using-NLP-Deep-Learning/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/Sudharsanv06/Resume-Screening-Job-Fit-Prediction-using-NLP-Deep-Learning/branch/main/graph/badge.svg)](https://codecov.io/gh/Sudharsanv06/Resume-Screening-Job-Fit-Prediction-using-NLP-Deep-Learning)
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-2.0-009688.svg)](https://fastapi.tiangolo.com/)
 
 
 ## 🎯 Project Overview
