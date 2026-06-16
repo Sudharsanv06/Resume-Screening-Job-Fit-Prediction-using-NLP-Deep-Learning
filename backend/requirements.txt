@@ -9,3 +9,5 @@ slowapi
 pytest
 pytest-cov
 httpx
+python-json-logger
+

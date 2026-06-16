@@ -20,6 +20,8 @@ class Settings:
     RATE_LIMIT_PREDICT: str = os.getenv("RATE_LIMIT_PREDICT", "10/minute")
 
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+    MODEL_VERSION: str = os.getenv("MODEL_VERSION", "v2")
+
 
 
 settings = Settings()
