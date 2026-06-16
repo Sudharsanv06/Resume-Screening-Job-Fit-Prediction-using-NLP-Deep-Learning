@@ -14,7 +14,7 @@ class Settings:
     LABEL_ENCODER_PATH: str = os.getenv("LABEL_ENCODER_PATH", "models/label_encoder_v2.pkl")
     SENTENCE_ENCODER_PATH: str = os.getenv("SENTENCE_ENCODER_PATH", "models/sentence_encoder")
 
-    ALLOWED_ORIGINS: list = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+    ALLOWED_ORIGINS: list = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,https://susanhuggingface7-resume-screener-api.hf.space").split(",")
 
     RATE_LIMIT_PREDICT: str = os.getenv("RATE_LIMIT_PREDICT", "10/minute")
 
