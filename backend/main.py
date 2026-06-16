@@ -1,6 +1,6 @@
-import time
 import os
 import sys
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
@@ -13,13 +13,17 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+_ROOT_DIR = os.path.dirname(_BACKEND_DIR)
+sys.path.insert(0, _ROOT_DIR)  # enables: from src.config import ...
+sys.path.insert(0, _BACKEND_DIR)  # enables: from parser import ...
 
+from parser import extract_text
+
+from src.career_dna import get_resume_dna
 from src.config import settings
 from src.logger import get_logger
-from src.predict_v2 import predict, is_models_loaded, _load_assets
-from src.career_dna import get_resume_dna
-from parser import extract_text
+from src.predict_v2 import _load_assets, is_models_loaded, predict
 
 logger = get_logger("resume_screener")
 
@@ -89,11 +93,11 @@ async def log_requests(request: Request, call_next):
     logger.info(
         "http_request",
         extra={
-            "method":      request.method,
-            "path":        request.url.path,
+            "method": request.method,
+            "path": request.url.path,
             "status_code": response.status_code,
             "duration_ms": elapsed,
-            "client_ip":   request.client.host if request.client else "unknown",
+            "client_ip": request.client.host if request.client else "unknown",
         },
     )
     return response
@@ -109,8 +113,8 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     return JSONResponse(
         status_code=exc.status_code,
         content={
-            "type":   f"https://resume-screener.com/errors/{exc.status_code}",
-            "title":  HTTP_STATUS_TITLES.get(exc.status_code, "Error"),
+            "type": f"https://resume-screener.com/errors/{exc.status_code}",
+            "title": HTTP_STATUS_TITLES.get(exc.status_code, "Error"),
             "status": exc.status_code,
             "detail": exc.detail,
         },
@@ -141,8 +145,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(
         status_code=422,
         content={
-            "type":   "https://resume-screener.com/errors/422",
-            "title":  "Validation Error",
+            "type": "https://resume-screener.com/errors/422",
+            "title": "Validation Error",
             "status": 422,
             "detail": sanitized_errors,
         },
@@ -195,11 +199,11 @@ def health_check():
     """Returns server status and whether ML models are in memory."""
     loaded = is_models_loaded()
     return {
-        "status":        "ok" if loaded else "degraded",
+        "status": "ok" if loaded else "degraded",
         "models_loaded": loaded,
-        "version":       app.version,
+        "version": app.version,
         "model_version": settings.MODEL_VERSION,
-        "environment":   settings.APP_ENV,
+        "environment": settings.APP_ENV,
     }
 
 
@@ -215,26 +219,26 @@ async def predict_from_text(request: Request, body: TextInput):
             detail=f"Resume text is too short (minimum {MIN_WORDS} words).",
         )
 
-    start  = time.perf_counter()
+    start = time.perf_counter()
     result = predict(body.text)
-    dna    = get_resume_dna(body.text, result["all_probs"], result["label"])
+    dna = get_resume_dna(body.text, result["all_probs"], result["label"])
     elapsed = round((time.perf_counter() - start) * 1000, 2)
 
     logger.info(
         "prediction",
         extra={
-            "source":       "text",
-            "label":        result["label"],
-            "confidence":   round(result["confidence"], 4),
-            "duration_ms":  elapsed,
+            "source": "text",
+            "label": result["label"],
+            "confidence": round(result["confidence"], 4),
+            "duration_ms": elapsed,
         },
     )
 
     return {
         **_base_response(result),
-        "word_count":        len(body.text.split()),
+        "word_count": len(body.text.split()),
         "processing_time_ms": elapsed,
-        "resume_dna":         dna,
+        "resume_dna": dna,
     }
 
 
@@ -254,7 +258,7 @@ async def predict_from_file(request: Request, file: UploadFile = File(...)):
         raise HTTPException(status_code=413, detail="File exceeds the 5 MB limit.")
 
     start = time.perf_counter()
-    text  = extract_text(contents, file.content_type)
+    text = extract_text(contents, file.content_type)
 
     if not text or len(text.split()) < MIN_WORDS:
         raise HTTPException(
@@ -262,26 +266,26 @@ async def predict_from_file(request: Request, file: UploadFile = File(...)):
             detail=f"Could not extract enough text (minimum {MIN_WORDS} words).",
         )
 
-    result  = predict(text)
-    dna     = get_resume_dna(text, result["all_probs"], result["label"])
+    result = predict(text)
+    dna = get_resume_dna(text, result["all_probs"], result["label"])
     elapsed = round((time.perf_counter() - start) * 1000, 2)
 
     logger.info(
         "prediction",
         extra={
-            "source":      "file",
-            "file_name":   file.filename,
-            "label":       result["label"],
-            "confidence":  round(result["confidence"], 4),
+            "source": "file",
+            "file_name": file.filename,
+            "label": result["label"],
+            "confidence": round(result["confidence"], 4),
             "duration_ms": elapsed,
         },
     )
 
     return {
         **_base_response(result),
-        "word_count":         len(text.split()),
+        "word_count": len(text.split()),
         "processing_time_ms": elapsed,
-        "resume_dna":         dna,
+        "resume_dna": dna,
     }
 
 
@@ -293,40 +297,44 @@ async def predict_batch(request: Request, body: BatchInput):
     Each item in results either contains a prediction or an error field
     if that individual text was too short or empty.
     """
-    start   = time.perf_counter()
+    start = time.perf_counter()
     results = []
 
     for idx, text in enumerate(body.texts):
         if not text.strip() or len(text.split()) < MIN_WORDS:
-            results.append({
-                "index": idx,
-                "error": f"Text too short (minimum {MIN_WORDS} words) or empty.",
-                "label": None,
-            })
+            results.append(
+                {
+                    "index": idx,
+                    "error": f"Text too short (minimum {MIN_WORDS} words) or empty.",
+                    "label": None,
+                }
+            )
             continue
 
         prediction = predict(text)
-        results.append({
-            "index":      idx,
-            "label":      prediction["label"],
-            "confidence": prediction["confidence"],
-            "top3":       prediction["top3"],
-        })
+        results.append(
+            {
+                "index": idx,
+                "label": prediction["label"],
+                "confidence": prediction["confidence"],
+                "top3": prediction["top3"],
+            }
+        )
 
     elapsed = round((time.perf_counter() - start) * 1000, 2)
 
     logger.info(
         "batch_prediction",
         extra={
-            "total":         len(body.texts),
-            "errors":        sum(1 for r in results if r.get("error")),
-            "duration_ms":   elapsed,
+            "total": len(body.texts),
+            "errors": sum(1 for r in results if r.get("error")),
+            "duration_ms": elapsed,
         },
     )
 
     return {
-        "results":            results,
-        "total":              len(results),
-        "model_version":      settings.MODEL_VERSION,
+        "results": results,
+        "total": len(results),
+        "model_version": settings.MODEL_VERSION,
         "processing_time_ms": elapsed,
     }

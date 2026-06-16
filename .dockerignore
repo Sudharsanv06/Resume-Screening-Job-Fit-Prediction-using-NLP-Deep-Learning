@@ -1,0 +1,39 @@
+# Version control
+.git
+.github
+.gitignore
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Environment & secrets
+.env
+.env.example
+.env.local
+venv/
+.venv/
+env/
+
+# Frontend — built and served separately via Vercel
+frontend/
+
+# Large data files not needed at runtime
+dataset/
+notebooks/
+results/
+
+# Tests — not needed inside the production image
+tests/
+pytest.ini
+pyproject.toml
+
+# Docs
+*.md

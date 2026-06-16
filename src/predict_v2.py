@@ -7,6 +7,7 @@ the best job fit for any input resume text with confidence scores.
 """
 
 import os
+
 import joblib
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -24,43 +25,48 @@ _encoder = None
 _classifier = None
 _label_encoder = None
 
+
 def _load_assets():
     """Load model preprocessors and classifiers into global memory if not already cached."""
     global _encoder, _classifier, _label_encoder
-    
+
     if _encoder is None:
         if not os.path.exists(ENCODER_PATH):
-            raise FileNotFoundError(f"Model directory not found at {ENCODER_PATH}. Please run train_model.py first.")
+            raise FileNotFoundError(
+                f"Model directory not found at {ENCODER_PATH}. Please run train_model.py first."
+            )
         print("Loading sentence transformer encoder...")
         _encoder = SentenceTransformer(ENCODER_PATH)
-        
+
     if _classifier is None:
         if not os.path.exists(CLASSIFIER_PATH):
-            raise FileNotFoundError(f"Classifier file not found at {CLASSIFIER_PATH}. Please run train_model.py first.")
+            raise FileNotFoundError(
+                f"Classifier file not found at {CLASSIFIER_PATH}. Please run train_model.py first."
+            )
         print("Loading classifier...")
         _classifier = joblib.load(CLASSIFIER_PATH)
-        
+
     if _label_encoder is None:
         if not os.path.exists(LABEL_ENCODER_PATH):
-            raise FileNotFoundError(f"Label encoder file not found at {LABEL_ENCODER_PATH}. Please run train_model.py first.")
+            raise FileNotFoundError(
+                f"Label encoder file not found at {LABEL_ENCODER_PATH}. Please run train_model.py first."
+            )
         print("Loading label encoder...")
         _label_encoder = joblib.load(LABEL_ENCODER_PATH)
 
+
 def is_models_loaded() -> bool:
     """Returns True if all three ML assets are loaded into memory."""
-    return all([
-        _encoder is not None,
-        _classifier is not None,
-        _label_encoder is not None
-    ])
+    return all([_encoder is not None, _classifier is not None, _label_encoder is not None])
+
 
 def predict(text: str) -> dict:
     """
     Predict the job fit category for a given resume text.
-    
+
     Args:
         text (str): Raw resume text
-        
+
     Returns:
         dict: Containing predicted label, confidence score, and top-3 predictions.
               Format:
@@ -72,51 +78,46 @@ def predict(text: str) -> dict:
     """
     if not text or not text.strip():
         raise ValueError("Input resume text cannot be empty.")
-        
+
     # Ensure assets are loaded
     _load_assets()
-    
+
     # 1. Generate text embedding
     embedding = _encoder.encode([text])[0]
-    embedding = np.expand_dims(embedding, axis=0) # Reshape for sklearn predict_proba (1, 384)
-    
+    embedding = np.expand_dims(embedding, axis=0)  # Reshape for sklearn predict_proba (1, 384)
+
     # 2. Predict probabilities
     probs = _classifier.predict_proba(embedding)[0]
-    
+
     # 3. Get top class index and confidence
     top_class_idx = np.argmax(probs)
     confidence = float(probs[top_class_idx])
     predicted_label = _label_encoder.classes_[top_class_idx]
-    
+
     # 4. Get top 3 predicted classes
     top_3_indices = np.argsort(probs)[-3:][::-1]
     top3_list = [
-        {
-            "label": str(_label_encoder.classes_[idx]),
-            "score": float(probs[idx])
-        }
+        {"label": str(_label_encoder.classes_[idx]), "score": float(probs[idx])}
         for idx in top_3_indices
     ]
-    
+
     # 5. Get all prediction probabilities (needed for Resume DNA)
     class_names = _label_encoder.classes_
-    all_probs = {
-        str(class_names[idx]): float(probs[idx])
-        for idx in range(len(class_names))
-    }
-    
+    all_probs = {str(class_names[idx]): float(probs[idx]) for idx in range(len(class_names))}
+
     return {
         "label": predicted_label,
         "confidence": confidence,
         "top3": top3_list,
-        "all_probs": all_probs
+        "all_probs": all_probs,
     }
+
 
 if __name__ == "__main__":
     print("==================================================")
     print("SMOKE TEST FOR PREDICT_V2")
     print("==================================================")
-    
+
     # Sample resumes representing different job profiles
     test_resumes = [
         # Data Scientist Test
@@ -163,13 +164,13 @@ if __name__ == "__main__":
         EDUCATION
         Bachelor of Science in Information Systems
         National Science University (2021)
-        """
+        """,
     ]
-    
+
     try:
         # Load models
         _load_assets()
-        
+
         for i, resume in enumerate(test_resumes, 1):
             print(f"\nAnalyzing Sample Resume #{i}:")
             print("-" * 50)
@@ -177,9 +178,9 @@ if __name__ == "__main__":
             print(f"Predicted Role: {res['label']}")
             print(f"Confidence: {res['confidence'] * 100:.2f}%")
             print("Top 3 Candidates:")
-            for rank, item in enumerate(res['top3'], 1):
+            for rank, item in enumerate(res["top3"], 1):
                 print(f"  {rank}. {item['label']:25s} - {item['score'] * 100:.2f}%")
             print("-" * 50)
-            
+
     except Exception as e:
         print(f"Error executing smoke test: {e}")

@@ -64,7 +64,8 @@ Desktop.ini
 # Model files (large)
 *.h5
 *.hdf5
-*.pkl
+# Large HuggingFace cached model — downloaded at Docker build time instead
+models/sentence_encoder/
 *.pickle
 *.joblib
 
@@ -99,7 +100,6 @@ logs/
 # Python
 __pycache__/
 *.py[cod]
-*.pkl
 *.egg-info/
 .venv/
 venv/

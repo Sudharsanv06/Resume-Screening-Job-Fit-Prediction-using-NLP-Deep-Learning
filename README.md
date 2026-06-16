@@ -1,9 +1,10 @@
-# Resume Screening & Job Fit Prediction (NLP + Deep Learning)
+# Resume Screening & Job Fit Prediction
 
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/Sudharsanv06/Resume-Screening-Job-Fit-Prediction-using-NLP-Deep-Learning)
-[![Python](https://img.shields.io/badge/Python-3.12.4-green)](https://www.python.org/)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange)](https://www.tensorflow.org/)
-[![Status](https://img.shields.io/badge/Status-Complete-success)]()
+[![CI](https://github.com/Sudharsanv06/Resume-Screening-Job-Fit-Prediction-using-NLP-Deep-Learning/actions/workflows/ci.yml/badge.svg)](https://github.com/Sudharsanv06/Resume-Screening-Job-Fit-Prediction-using-NLP-Deep-Learning/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/Sudharsanv06/Resume-Screening-Job-Fit-Prediction-using-NLP-Deep-Learning/branch/main/graph/badge.svg)](https://codecov.io/gh/Sudharsanv06/Resume-Screening-Job-Fit-Prediction-using-NLP-Deep-Learning)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-2.0-009688.svg)](https://fastapi.tiangolo.com/)
+
 
 ## 🎯 Project Overview
 

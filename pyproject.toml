@@ -1,0 +1,26 @@
+[tool.ruff]
+target-version = "py310"
+line-length    = 100
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes (unused imports, undefined names)
+    "I",    # isort (import ordering)
+    "UP",   # pyupgrade (use modern Python syntax)
+    "B",    # flake8-bugbear (common bugs and design issues)
+]
+ignore = [
+    "E501",   # line too long — formatter handles this
+    "B008",   # function call in default arg — intentional in FastAPI File(...)
+    "UP007",  # use X | Y for unions — keeping Optional[] for clarity
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*"   = ["F401", "F811", "E402"]   # test files need flexible imports
+"backend/*" = ["E402"]                    # sys.path inserts are intentional
+
+[tool.ruff.format]
+quote-style  = "double"
+indent-style = "space"

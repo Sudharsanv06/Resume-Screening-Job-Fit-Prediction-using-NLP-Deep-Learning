@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev, master]
+  pull_request:
+    branches: [main, master]
+
+
+jobs:
+
+  # ── Job 1: Full test suite with coverage ───────────────────────────────────
+  test:
+    name: Tests (Python 3.10)
+    runs-on: ubuntu-latest
+
+    # These mirror your .env so tests have the right config
+    env:
+      APP_ENV:               testing
+      ALLOWED_ORIGINS:       http://localhost:5173
+      RATE_LIMIT_PREDICT:    10000/minute
+      LOG_LEVEL:             WARNING
+      MODEL_VERSION:         v2
+      CLASSIFIER_PATH:       models/classifier_v2.pkl
+      LABEL_ENCODER_PATH:    models/label_encoder_v2.pkl
+      SENTENCE_ENCODER_PATH: models/sentence_encoder
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Run full test suite with coverage
+        run: pytest --cov=src --cov=backend --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage.xml
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  # ── Job 2: Lint and format check ───────────────────────────────────────────
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Check for lint errors
+        run: ruff check src/ backend/
+
+      - name: Check code formatting
+        run: ruff format --check src/ backend/
