@@ -15,7 +15,7 @@ COPY backend/requirements.txt ./requirements.txt
 # build on Render's free 512MB tier. CPU-only torch is ~200MB and works fine
 # for sentence-transformers inference on CPU.
 RUN pip install --no-cache-dir \
-    torch==2.1.0 \
+    torch==2.2.2 \
     --index-url https://download.pytorch.org/whl/cpu
 
 # Now install everything else — sentence-transformers sees torch already present

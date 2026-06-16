@@ -11,6 +11,7 @@ pytest-cov
 httpx
 python-json-logger
 ruff
+torch==2.2.2
 sentence-transformers==2.7.0
 scikit-learn==1.4.2
 joblib==1.5.2
