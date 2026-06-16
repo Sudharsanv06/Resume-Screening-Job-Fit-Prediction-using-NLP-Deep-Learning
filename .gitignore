@@ -111,3 +111,18 @@ frontend/.env.local
 
 # Dataset (too large for git)
 dataset/Resume.csv
+
+# Binary files excluded from HuggingFace Spaces push
+models/resume_classifier.keras
+models/classifier.pkl
+models/label_encoder.pkl
+models/tokenizer.pkl
+models/X_train.npy
+models/X_test.npy
+models/y_train.npy
+models/y_test.npy
+results/*.png
+results/*.txt
+.coverage
+coverage.xml
+htmlcov/
