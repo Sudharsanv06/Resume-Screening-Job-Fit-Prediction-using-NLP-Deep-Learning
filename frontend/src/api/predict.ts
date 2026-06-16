@@ -7,7 +7,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 30_000, // 30s — model inference can be slow on free Render tier
+  timeout: 60_000, // 60s — covers Render free tier cold start (30–60s wake-up time)
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

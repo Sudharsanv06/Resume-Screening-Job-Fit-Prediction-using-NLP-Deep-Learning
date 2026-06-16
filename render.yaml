@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: resume-screener-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: singapore          # closest to India — lowest latency for you
+    healthCheckPath: /health
+
+    envVars:
+      - key: APP_ENV
+        value: production
+
+      - key: MODEL_VERSION
+        value: v2
+
+      - key: CLASSIFIER_PATH
+        value: models/classifier_v2.pkl
+
+      - key: LABEL_ENCODER_PATH
+        value: models/label_encoder_v2.pkl
+
+      - key: SENTENCE_ENCODER_PATH
+        value: models/sentence_encoder
+
+      - key: RATE_LIMIT_PREDICT
+        value: 10/minute
+
+      - key: LOG_LEVEL
+        value: INFO
+
+      # Will be updated in Phase 7 once Vercel URL is known
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:5173,http://localhost:3000
