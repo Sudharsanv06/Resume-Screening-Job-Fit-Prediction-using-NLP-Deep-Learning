@@ -164,7 +164,7 @@ export const ResumeDNA: React.FC<ResumeDNAProps> = ({ dna }) => {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {presentSkills.length > 0 ? (
-                    presentSkills.map((skill, idx) => (
+                    presentSkills.map((skill: string, idx: number) => (
                       <span 
                         key={idx}
                         className="px-2.5 py-1 bg-emerald-500/10 text-emerald-700 dark:text-emerald-350 border border-emerald-500/20 dark:border-emerald-500/10 rounded-full text-xs font-semibold"
@@ -188,7 +188,7 @@ export const ResumeDNA: React.FC<ResumeDNAProps> = ({ dna }) => {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {missingSkills.length > 0 ? (
-                    missingSkills.map((skill, idx) => (
+                    missingSkills.map((skill: string, idx: number) => (
                       <span 
                         key={idx}
                         className="px-2.5 py-1 bg-rose-500/10 text-rose-700 dark:text-rose-350 border border-rose-500/20 dark:border-rose-500/10 rounded-full text-xs font-semibold"
@@ -197,6 +197,7 @@ export const ResumeDNA: React.FC<ResumeDNAProps> = ({ dna }) => {
                       </span>
                     ))
                   ) : (
+
                     <span className="text-xs text-emerald-500 dark:text-emerald-400 italic">
                       Outstanding match! All core keywords detected.
                     </span>

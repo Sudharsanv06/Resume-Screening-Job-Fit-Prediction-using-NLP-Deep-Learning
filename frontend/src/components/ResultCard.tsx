@@ -49,9 +49,10 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result, onReset }) => {
         <div className="mb-6">
           <p className="text-xs text-slate-400 dark:text-slate-300 font-medium">Predicted Job Role</p>
           <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mt-1 tracking-tight leading-tight">
-            {result.predicted_role}
+            {result.label}
           </h2>
         </div>
+
 
         {/* Visual Progress Section */}
         <div className="flex items-center justify-center py-6">

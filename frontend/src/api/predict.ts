@@ -1,82 +1,68 @@
-import axios from 'axios';
-import type { PredictionResponse } from '../types';
+import axios, { AxiosError } from "axios";
+import type { PredictionResponse, BatchResponse, ApiError } from "../types";
 
-export const predictText = async (text: string): Promise<PredictionResponse> => {
+// Reads from .env.local in dev, from Vercel dashboard env in prod.
+// Falls back to localhost so the app still works without the env file.
+const BASE_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
+
+const api = axios.create({
+  baseURL: BASE_URL,
+  timeout: 30_000, // 30s — model inference can be slow on free Render tier
+});
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function extractErrorMessage(err: unknown): string {
+  const axiosErr = err as AxiosError<ApiError>;
+  const detail   = axiosErr?.response?.data?.detail;
+
+  if (typeof detail === "string")  return detail;
+  if (Array.isArray(detail))       return detail.map((d) => d.msg ?? JSON.stringify(d)).join(", ");
+
+  if (axiosErr?.code === "ECONNABORTED") return "Request timed out. The server may be waking up — please try again.";
+  if (axiosErr?.code === "ERR_NETWORK")  return "Cannot reach the server. Check your connection or try again shortly.";
+
+  return "Something went wrong. Please try again.";
+}
+
+// ── API calls ─────────────────────────────────────────────────────────────────
+
+export async function predictFromText(text: string): Promise<PredictionResponse> {
   try {
-    const response = await axios.post<PredictionResponse>('/api/predict/text', { text });
-    return response.data;
-  } catch (error) {
-    throw new Error(handleApiError(error));
+    const { data } = await api.post<PredictionResponse>("/predict/text", { text });
+    return data;
+  } catch (err) {
+    throw new Error(extractErrorMessage(err));
   }
-};
+}
 
-export const predictFile = async (file: File): Promise<PredictionResponse> => {
+export async function predictFromFile(file: File): Promise<PredictionResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
   try {
-    const formData = new FormData();
-    formData.append('file', file);
-    const response = await axios.post<PredictionResponse>('/api/predict/file', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+    const { data } = await api.post<PredictionResponse>("/predict/file", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
-    return response.data;
-  } catch (error) {
-    throw new Error(handleApiError(error));
+    return data;
+  } catch (err) {
+    throw new Error(extractErrorMessage(err));
   }
-};
+}
 
-const handleApiError = (error: unknown): string => {
-  if (axios.isAxiosError(error)) {
-    const status = error.response?.status;
-    const data = error.response?.data;
-    
-    // Attempt to extract detail from FastAPI validation structure
-    let detail = '';
-    if (data && typeof data === 'object') {
-      if ('detail' in data) {
-        const d = (data as { detail: unknown }).detail;
-        if (typeof d === 'string') {
-          detail = d;
-        } else if (Array.isArray(d)) {
-          // Validation list errors format
-          detail = d.map((err: unknown) => {
-            if (err && typeof err === 'object' && 'msg' in err) {
-              return (err as { msg: string }).msg;
-            }
-            return JSON.stringify(err);
-          }).join(', ');
-        } else {
-          detail = JSON.stringify(d);
-        }
-      }
-    }
+export async function predictBatch(texts: string[]): Promise<BatchResponse> {
+  try {
+    const { data } = await api.post<BatchResponse>("/predict/batch", { texts });
+    return data;
+  } catch (err) {
+    throw new Error(extractErrorMessage(err));
+  }
+}
 
-    if (status === 413) {
-      return 'File size is too large (maximum size is 5MB).';
-    }
-    if (status === 415) {
-      return 'Unsupported file format. Only PDF and DOCX files are allowed.';
-    }
-    if (status === 422) {
-      return detail || 'Unprocessable entity. Validation error in data submitted.';
-    }
-    if (status === 400) {
-      return detail || 'Invalid request parameters.';
-    }
-    if (status === 500) {
-      return 'Internal server error occurred on the prediction service.';
-    }
-    
-    if (error.code === 'ERR_NETWORK') {
-      return 'Network error: Cannot reach the backend. Check if the server is running.';
-    }
-    
-    return detail || error.message || `Server returned error status ${status}`;
+export async function checkHealth(): Promise<boolean> {
+  try {
+    const { data } = await api.get("/health");
+    return data?.status === "ok";
+  } catch {
+    return false;
   }
-  
-  if (error instanceof Error) {
-    return error.message;
-  }
-  
-  return 'An unexpected error occurred.';
-};
+}

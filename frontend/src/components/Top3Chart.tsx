@@ -24,10 +24,11 @@ export const Top3Chart: React.FC<Top3ChartProps> = ({ result, darkMode }) => {
   const chartData = [...result.top3]
     .sort((a, b) => b.score - a.score) // Ensure descending order
     .map((item) => ({
-      name: item.role,
+      name: item.label,
       probability: Math.round(item.score * 100),
-      rawPercentage: item.score_pct,
+      rawPercentage: `${(item.score * 100).toFixed(1)}%`,
     }));
+
 
   // Define colors based on light/dark mode
   const secondaryBarColor = darkMode ? '#475569' : '#CBD5E1'; // Slate-600 vs Slate-300
